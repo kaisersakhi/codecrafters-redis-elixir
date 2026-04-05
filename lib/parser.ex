@@ -26,8 +26,19 @@ defmodule Server.Parser do
 
       "SET" ->
         [key, value | options] = rest
+        IO.inspect("Key: " <> key)
+        IO.inspect("Val: " <> value)
+        IO.inspect("Options: #{options}")
+
         Store.set(key, value, options)
-        ""
+        "+OK\r\n"
+
+      "GET" ->
+        [key] = rest
+
+        value = Store.get(key) || ""
+
+        "$#{byte_size(value)}\r\n#{value}\r\n"
 
       _ ->
         "-Err unknown command\r\n"
