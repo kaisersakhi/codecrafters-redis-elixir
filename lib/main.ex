@@ -41,8 +41,11 @@ defmodule Server do
 
   defp loop(client) do
     case :gen_tcp.recv(client, 0) do
-      {:ok, _data} ->
-        :gen_tcp.send(client, "+PONG\r\n")
+      {:ok, cmd} ->
+        IO.inspect("Data Recieved : #{cmd}")
+        resp = Server.Parser.parse_command(cmd)
+        # :gen_tcp.send(client, "+PONG\r\n")
+        :gen_tcp.send(client, resp)
         loop(client)
 
       {:error, :closed} ->
