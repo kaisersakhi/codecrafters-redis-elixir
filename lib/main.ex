@@ -2,6 +2,7 @@ defmodule Server do
   @moduledoc """
   Your implementation of a Redis server
   """
+  alias GenLSP.Requests.Initialize
 
   use Application
 
@@ -15,6 +16,9 @@ defmodule Server do
   def listen() do
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     IO.puts("Logs from your program will appear here!")
+
+    # Initialize store, this should be moved to application.ex later and start under a superversir
+    Server.Store.start_link()
 
     # Uncomment the code below to pass the first stage
     #

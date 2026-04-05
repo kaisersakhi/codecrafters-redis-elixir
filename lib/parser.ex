@@ -1,4 +1,6 @@
 defmodule Server.Parser do
+  alias Server.Store
+
   @valid_commands ["PING", "ECHO"]
   @crlf "\r\n"
 
@@ -21,6 +23,11 @@ defmodule Server.Parser do
 
       "PING" ->
         "+PONG\r\n"
+
+      "SET" ->
+        [key, value | options] = rest
+        Store.set(key, value, options)
+        ""
 
       _ ->
         "-Err unknown command\r\n"
