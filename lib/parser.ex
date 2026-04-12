@@ -30,7 +30,7 @@ defmodule Server.Parser do
         IO.inspect("Val: " <> value)
         IO.inspect("Options: #{options}")
 
-        Store.set(key, value, options)
+        Store.set(key, value |> String.trim(), tarray_to_map(options))
         "+OK\r\n"
 
       "GET" ->
@@ -38,7 +38,20 @@ defmodule Server.Parser do
 
         value = Store.get(key) || ""
 
-        "$#{byte_size(value)}\r\n#{value}\r\n"
+        size = byte_size(value)
+
+        IO.puts("prepare_response:Byte Size: " <> "#{byte_size(value)}")
+        IO.puts("prepare_response:Value: #{value}")
+
+        # IO.puts("prepare_response:GET IO: " <> "$#{size}\r\n#{value}\r\n")
+
+        cond do
+          size > 0 ->
+            "$#{size}\r\n#{value}\r\n"
+
+          true ->
+            "$#{-1}\r\n"
+        end
 
       _ ->
         "-Err unknown command\r\n"
@@ -68,4 +81,11 @@ defmodule Server.Parser do
   end
 
   defp parse_items([""]), do: []
+
+  # Tuple array to map. Yeah, i don't know how to name things!
+  defp tarray_to_map(list) do
+    list
+    |> Enum.chunk_every(2)
+    |> Map.new(fn [k, v] -> {k, v} end)
+  end
 end
